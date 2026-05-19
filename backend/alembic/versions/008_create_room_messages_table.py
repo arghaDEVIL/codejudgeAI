@@ -20,14 +20,15 @@ depends_on = None
 def upgrade():
     """Create room_messages table"""
 
-    # Create enum type if it doesn't exist
-    op.execute("""
-        DO $$ BEGIN
-            CREATE TYPE message_type AS ENUM ('chat', 'system', 'code_run');
-        EXCEPTION
-            WHEN duplicate_object THEN null;
-        END $$;
-    """)
+    # Check and create enum type only if it doesn't exist
+    connection = op.get_bind()
+    result = connection.execute(
+        sa.text("SELECT 1 FROM pg_type WHERE typname = 'message_type'")
+    )
+    if not result.fetchone():
+        connection.execute(
+            sa.text("CREATE TYPE message_type AS ENUM ('chat', 'system', 'code_run')")
+        )
 
     # Create room_messages table
     op.create_table(

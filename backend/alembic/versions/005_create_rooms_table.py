@@ -20,22 +20,28 @@ depends_on = None
 def upgrade():
     """Create rooms table"""
 
-    # Create enum types if they don't exist
-    op.execute("""
-        DO $$ BEGIN
-            CREATE TYPE room_mode AS ENUM ('collaborative', 'interview', 'practice');
-        EXCEPTION
-            WHEN duplicate_object THEN null;
-        END $$;
-    """)
+    # Check and create enum types only if they don't exist
+    connection = op.get_bind()
 
-    op.execute("""
-        DO $$ BEGIN
-            CREATE TYPE room_status AS ENUM ('active', 'ended', 'archived');
-        EXCEPTION
-            WHEN duplicate_object THEN null;
-        END $$;
-    """)
+    # Check if room_mode exists
+    result = connection.execute(
+        sa.text("SELECT 1 FROM pg_type WHERE typname = 'room_mode'")
+    )
+    if not result.fetchone():
+        connection.execute(
+            sa.text(
+                "CREATE TYPE room_mode AS ENUM ('collaborative', 'interview', 'practice')"
+            )
+        )
+
+    # Check if room_status exists
+    result = connection.execute(
+        sa.text("SELECT 1 FROM pg_type WHERE typname = 'room_status'")
+    )
+    if not result.fetchone():
+        connection.execute(
+            sa.text("CREATE TYPE room_status AS ENUM ('active', 'ended', 'archived')")
+        )
 
     # Create rooms table
     op.create_table(

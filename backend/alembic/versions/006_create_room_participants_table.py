@@ -19,14 +19,17 @@ depends_on = None
 def upgrade():
     """Create room_participants table"""
 
-    # Create enum type if it doesn't exist
-    op.execute("""
-        DO $$ BEGIN
-            CREATE TYPE participant_role AS ENUM ('host', 'interviewer', 'candidate', 'viewer');
-        EXCEPTION
-            WHEN duplicate_object THEN null;
-        END $$;
-    """)
+    # Check and create enum type only if it doesn't exist
+    connection = op.get_bind()
+    result = connection.execute(
+        sa.text("SELECT 1 FROM pg_type WHERE typname = 'participant_role'")
+    )
+    if not result.fetchone():
+        connection.execute(
+            sa.text(
+                "CREATE TYPE participant_role AS ENUM ('host', 'interviewer', 'candidate', 'viewer')"
+            )
+        )
 
     # Create room_participants table
     op.create_table(

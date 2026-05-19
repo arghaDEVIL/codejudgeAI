@@ -19,14 +19,17 @@ depends_on = None
 def upgrade():
     """Create room_code_snapshots table"""
 
-    # Create enum type if it doesn't exist
-    op.execute("""
-        DO $$ BEGIN
-            CREATE TYPE snapshot_type AS ENUM ('auto', 'manual', 'submission');
-        EXCEPTION
-            WHEN duplicate_object THEN null;
-        END $$;
-    """)
+    # Check and create enum type only if it doesn't exist
+    connection = op.get_bind()
+    result = connection.execute(
+        sa.text("SELECT 1 FROM pg_type WHERE typname = 'snapshot_type'")
+    )
+    if not result.fetchone():
+        connection.execute(
+            sa.text(
+                "CREATE TYPE snapshot_type AS ENUM ('auto', 'manual', 'submission')"
+            )
+        )
 
     # Create room_code_snapshots table
     op.create_table(
