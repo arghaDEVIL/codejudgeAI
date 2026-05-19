@@ -20,9 +20,13 @@ depends_on = None
 def upgrade():
     """Create room_messages table"""
 
-    # Create enum type
+    # Create enum type if it doesn't exist
     op.execute("""
-        CREATE TYPE message_type AS ENUM ('chat', 'system', 'code_run');
+        DO $$ BEGIN
+            CREATE TYPE message_type AS ENUM ('chat', 'system', 'code_run');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
     """)
 
     # Create room_messages table

@@ -19,9 +19,13 @@ depends_on = None
 def upgrade():
     """Create room_participants table"""
 
-    # Create enum type
+    # Create enum type if it doesn't exist
     op.execute("""
-        CREATE TYPE participant_role AS ENUM ('host', 'interviewer', 'candidate', 'viewer');
+        DO $$ BEGIN
+            CREATE TYPE participant_role AS ENUM ('host', 'interviewer', 'candidate', 'viewer');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
     """)
 
     # Create room_participants table

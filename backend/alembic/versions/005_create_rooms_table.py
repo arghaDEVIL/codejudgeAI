@@ -20,10 +20,21 @@ depends_on = None
 def upgrade():
     """Create rooms table"""
 
-    # Create enum types
+    # Create enum types if they don't exist
     op.execute("""
-        CREATE TYPE room_mode AS ENUM ('collaborative', 'interview', 'practice');
-        CREATE TYPE room_status AS ENUM ('active', 'ended', 'archived');
+        DO $$ BEGIN
+            CREATE TYPE room_mode AS ENUM ('collaborative', 'interview', 'practice');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
+    """)
+
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE room_status AS ENUM ('active', 'ended', 'archived');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
     """)
 
     # Create rooms table

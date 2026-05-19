@@ -19,9 +19,13 @@ depends_on = None
 def upgrade():
     """Create room_code_snapshots table"""
 
-    # Create enum type
+    # Create enum type if it doesn't exist
     op.execute("""
-        CREATE TYPE snapshot_type AS ENUM ('auto', 'manual', 'submission');
+        DO $$ BEGIN
+            CREATE TYPE snapshot_type AS ENUM ('auto', 'manual', 'submission');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
     """)
 
     # Create room_code_snapshots table
