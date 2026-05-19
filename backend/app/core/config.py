@@ -25,5 +25,12 @@ class Settings(BaseSettings):
         env_file=".env", case_sensitive=True, extra="ignore"
     )
 
+    @property
+    def database_url(self) -> str:
+        """Convert postgres:// to postgresql:// for SQLAlchemy 1.4+ compatibility"""
+        if self.DATABASE_URL.startswith("postgres://"):
+            return self.DATABASE_URL.replace("postgres://", "postgresql://", 1)
+        return self.DATABASE_URL
+
 
 settings = Settings()

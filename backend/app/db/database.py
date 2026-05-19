@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.core.config import settings
 
-# Create database engine
+# Create database engine with converted URL
 engine = create_engine(
-    settings.DATABASE_URL,
+    settings.database_url,  # Use the property that converts postgres:// to postgresql://
     pool_pre_ping=True,  # Verify connections before using
     echo=settings.DEBUG,  # Log SQL queries in debug mode
 )
