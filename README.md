@@ -1,115 +1,84 @@
-# 🚀 AI Code Judge Platform
+# 🚀 CodeJudge AI - Online Coding Platform
 
-A modern, full-stack competitive programming platform similar to LeetCode/Codeforces, featuring real-time code execution, JWT authentication, and a beautiful UI.
+An advanced online coding platform with AI-powered feedback, real-time collaboration, and comprehensive problem-solving features.
 
-![Tech Stack](https://img.shields.io/badge/React-19.2-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
-![Python](https://img.shields.io/badge/Python-3.11+-yellow)
+![CodeJudge AI](https://img.shields.io/badge/CodeJudge-AI-blue)
+![Python](https://img.shields.io/badge/Python-3.9+-green)
+![React](https://img.shields.io/badge/React-18+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Latest-teal)
 
 ## ✨ Features
 
-### Current Features
-- ✅ **User Authentication** - JWT-based secure authentication
-- ✅ **Protected Routes** - Frontend and backend route protection
-- ✅ **Multi-Language Support** - Python and C++ code execution
-- ✅ **Real-time Code Editor** - Monaco Editor integration
-- ✅ **Problem Management** - Browse and solve coding problems
-- ✅ **Submission System** - Track all code submissions
-- ✅ **Verdict System** - Accepted, Wrong Answer, Runtime Error, TLE, Compilation Error
-- ✅ **Modern UI** - Glassmorphism design with Tailwind CSS
-- ✅ **Responsive Design** - Works on all devices
+### 🎯 Core Features
+- **Online Code Judge** - Submit and test code against multiple test cases
+- **Multiple Languages** - Support for Python and C++
+- **Real-time Execution** - Instant code execution with Docker isolation
+- **AI Feedback** - Get intelligent feedback powered by Google Gemini AI
+- **Problem Library** - Curated collection of coding problems with detailed descriptions
 
-### Coming Soon
-- 🔄 Testcase System (multiple test cases with stdin support)
-- 🔄 Hidden vs Sample Testcases
-- 🔄 Leaderboard & Rankings
-- 🔄 User Profiles & Statistics
-- 🔄 Problem Tags & Filtering
-- 🔄 AI-Powered Feedback
-- 🔄 Docker Sandbox Execution
-- 🔄 Contest Mode
+### 👥 Collaborative Features
+- **Real-time Collaboration** - Code together with multiple users
+- **Live Cursors** - See where others are typing in real-time
+- **Chat System** - Built-in chat for team communication
+- **Code Snapshots** - Save and restore code versions
+- **Room Management** - Create and join coding rooms
 
-## 🏗️ Architecture
+### 📊 Advanced Features
+- **User Dashboard** - Track your progress and statistics
+- **Achievement System** - Earn badges and track milestones
+- **Submission History** - View all your past submissions with pagination
+- **Problem Filtering** - Filter by difficulty, tags, and search
+- **Hidden Test Cases** - Comprehensive testing with sample and hidden cases
+- **Score System** - Weighted scoring based on test case difficulty
 
-```
-ai-code-judge/
-├── backend/                    # FastAPI Backend
-│   ├── app/
-│   │   ├── api/               # API routes
-│   │   │   └── v1/
-│   │   │       ├── endpoints/ # Auth, Problems, Submissions
-│   │   │       └── router.py
-│   │   ├── core/              # Core configuration
-│   │   │   ├── config.py      # Settings management
-│   │   │   └── security.py    # JWT & password hashing
-│   │   ├── db/                # Database
-│   │   │   └── database.py    # SQLAlchemy setup
-│   │   ├── models/            # SQLAlchemy models
-│   │   │   ├── user.py
-│   │   │   ├── problem.py
-│   │   │   └── submission.py
-│   │   ├── schemas/           # Pydantic schemas
-│   │   │   ├── user.py
-│   │   │   ├── problem.py
-│   │   │   └── submission.py
-│   │   └── main.py            # FastAPI app
-│   ├── .env                   # Environment variables
-│   ├── requirements.txt       # Python dependencies
-│   └── run.py                 # Development server
-│
-├── frontend/                  # React Frontend
-│   ├── src/
-│   │   ├── utils/
-│   │   │   └── api.js         # API client with JWT
-│   │   ├── App.jsx            # Main app with routing
-│   │   ├── Login.jsx          # Login page
-│   │   ├── Register.jsx       # Registration page
-│   │   └── Judge.jsx          # Main judge interface
-│   ├── package.json
-│   └── vite.config.js
-│
-└── README.md
-```
+### 🎨 UI/UX Features
+- **Modern Design** - Built with shadcn/ui and Tailwind CSS
+- **Dark/Light Theme** - Toggle between themes with system preference support
+- **Responsive Layout** - Works perfectly on all screen sizes
+- **Markdown Support** - Beautiful problem descriptions with syntax highlighting
+- **Monaco Editor** - Professional code editor with IntelliSense
 
 ## 🛠️ Tech Stack
 
 ### Backend
 - **FastAPI** - Modern Python web framework
+- **PostgreSQL** - Robust relational database
 - **SQLAlchemy** - ORM for database operations
-- **PostgreSQL** - Relational database
-- **JWT** - Secure authentication
-- **Pydantic** - Data validation
-- **Passlib** - Password hashing
+- **Alembic** - Database migrations
+- **Docker** - Secure code execution environment
+- **WebSockets** - Real-time communication
+- **Google Gemini AI** - AI-powered feedback generation
 
 ### Frontend
-- **React 19** - UI library
-- **Vite** - Build tool
-- **Tailwind CSS** - Utility-first CSS
-- **Monaco Editor** - VS Code editor
-- **Axios** - HTTP client
+- **React 18** - Modern UI library
+- **Vite** - Fast build tool
+- **shadcn/ui** - Beautiful component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **Monaco Editor** - VS Code's editor
 - **React Router** - Client-side routing
+- **Axios** - HTTP client
+- **React Markdown** - Markdown rendering
 
 ## 📦 Installation
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.9+
 - Node.js 18+
-- PostgreSQL 14+
-- g++ compiler (for C++ support)
+- PostgreSQL 13+
+- Docker (for code execution)
 
 ### Backend Setup
 
 1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
-cd ai-code-judge/backend
+git clone https://github.com/arghaDEVIL/codejudgeAI.git
+cd codejudgeAI/backend
 ```
 
 2. **Create virtual environment**
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # On Windows: .\venv\Scripts\activate
 ```
 
 3. **Install dependencies**
@@ -120,21 +89,26 @@ pip install -r requirements.txt
 4. **Configure environment**
 ```bash
 cp .env.example .env
-# Edit .env with your database credentials and secret key
+# Edit .env with your database credentials and API keys
 ```
 
-5. **Create database**
+5. **Run migrations**
 ```bash
-createdb codejudge  # Or use pgAdmin
+alembic upgrade head
 ```
 
-6. **Run the server**
+6. **Add sample problems**
 ```bash
-python run.py
+python add_curated_problems.py
+python add_testcases.py
 ```
 
-Backend will run on `http://localhost:8000`
-API docs available at `http://localhost:8000/docs`
+7. **Start the server**
+```bash
+uvicorn app.main:app --reload
+```
+
+Backend will be available at `http://localhost:8000`
 
 ### Frontend Setup
 
@@ -148,162 +122,160 @@ cd ../frontend
 npm install
 ```
 
-3. **Run development server**
+3. **Start development server**
 ```bash
 npm run dev
 ```
 
-Frontend will run on `http://localhost:5173`
+Frontend will be available at `http://localhost:5173`
 
-## 🔐 Environment Variables
+## 🚀 Quick Start
 
-### Backend (.env)
+1. **Register an account** at `http://localhost:5173/register`
+2. **Login** at `http://localhost:5173/login`
+3. **Browse problems** on the Judge page
+4. **Write your solution** in the Monaco editor
+5. **Submit and get instant feedback**
+6. **View your dashboard** to track progress
+
+## 📖 Documentation
+
+### Key Documents
+- [Architecture Overview](ARCHITECTURE.md)
+- [Setup Guide](SETUP_GUIDE.md)
+- [Database Migrations](backend/RUN_MIGRATIONS.md)
+- [Docker Execution](backend/DOCKER_EXECUTION_GUIDE.md)
+- [Collaborative Coding](COLLABORATIVE_CODING_COMPLETE.md)
+- [Problem Importer](AUTOMATED_PROBLEM_IMPORTER.md)
+
+### Feature Documentation
+- [Dashboard Feature](DASHBOARD_FEATURE.md)
+- [Theme System](THEME_FEATURE.md)
+- [Pagination System](PAGINATION_IMPLEMENTATION_COMPLETE.md)
+- [Problem Tags & Filters](PROBLEM_DIFFICULTY_TAGS_SYSTEM.md)
+- [Hidden Test Cases](backend/HIDDEN_TESTCASE_SYSTEM.md)
+
+## 🎯 Usage Examples
+
+### Submitting Code
+```python
+# Example: Two Sum Problem
+def two_sum(nums, target):
+    hash_map = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in hash_map:
+            return [hash_map[complement], i]
+        hash_map[num] = i
+    return []
+```
+
+### Creating a Collaborative Room
+1. Go to Rooms page
+2. Click "Create Room"
+3. Share room code with teammates
+4. Code together in real-time!
+
+### Filtering Problems
+- Filter by difficulty: Easy, Medium, Hard
+- Filter by tags: arrays, strings, dynamic-programming, etc.
+- Search by title or description
+- Combine multiple filters
+
+## 🔧 Configuration
+
+### Environment Variables
+
+**Backend (.env)**
 ```env
-DATABASE_URL=postgresql+psycopg://postgres:password@localhost:5432/codejudge
-SECRET_KEY=your-secret-key-here-use-openssl-rand-hex-32
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-FRONTEND_URL=http://localhost:5173
-DEBUG=True
+DATABASE_URL=postgresql://user:password@localhost/codejudge
+SECRET_KEY=your-secret-key-here
+GEMINI_API_KEY=your-gemini-api-key
+DOCKER_ENABLED=true
 ```
 
-## 📚 API Documentation
-
-### Authentication Endpoints
-
-#### POST `/api/v1/auth/signup`
-Register a new user
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123"
-}
+**Frontend**
+```env
+VITE_API_URL=http://localhost:8000
 ```
 
-#### POST `/api/v1/auth/login`
-Login and get JWT token
-```json
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd backend
+pytest
 ```
 
-Response:
-```json
-{
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "token_type": "bearer",
-  "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com"
-  }
-}
+### Frontend Tests
+```bash
+cd frontend
+npm test
 ```
 
-#### GET `/api/v1/auth/me`
-Get current user (requires authentication)
+## 📊 Database Schema
 
-### Problems Endpoints
+### Core Tables
+- **users** - User accounts and authentication
+- **problems** - Coding problems with descriptions
+- **testcases** - Sample and hidden test cases
+- **submissions** - User code submissions
+- **testcase_results** - Individual test case results
+- **ai_feedback** - AI-generated feedback
 
-#### GET `/api/v1/problems`
-Get all problems
-
-#### GET `/api/v1/problems/{id}`
-Get specific problem
-
-#### POST `/api/v1/problems`
-Create new problem (requires authentication)
-
-### Submissions Endpoints
-
-#### POST `/api/v1/submissions`
-Submit code (requires authentication)
-```json
-{
-  "problem_id": 1,
-  "code": "print('Hello World')",
-  "language": "python"
-}
-```
-
-#### GET `/api/v1/submissions`
-Get user's submissions (requires authentication)
-
-## 🎨 UI Features
-
-- **Glassmorphism Design** - Modern frosted glass effect
-- **Gradient Backgrounds** - Beautiful color transitions
-- **Smooth Animations** - Hover effects and transitions
-- **Dark Theme** - Easy on the eyes
-- **Responsive Layout** - Mobile-friendly
-- **Icon Integration** - SVG icons throughout
-- **Loading States** - Visual feedback for async operations
-
-## 🔒 Security Features
-
-- JWT token-based authentication
-- Password hashing with bcrypt
-- Protected API routes
-- CORS configuration
-- SQL injection prevention (SQLAlchemy ORM)
-- Input validation (Pydantic)
-
-## 🚀 Deployment
-
-### Backend Deployment (Railway/Render)
-1. Set environment variables
-2. Use `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-3. Configure PostgreSQL database
-
-### Frontend Deployment (Vercel/Netlify)
-1. Build: `npm run build`
-2. Deploy `dist` folder
-3. Configure environment variables
-
-## 📈 Future Enhancements
-
-### Phase 2: Core Features
-- [ ] Multiple testcases with stdin support
-- [ ] Hidden vs sample testcases
-- [ ] Submission history dashboard
-- [ ] Problem difficulty ratings
-
-### Phase 3: Advanced Features
-- [ ] Leaderboard system
-- [ ] User profiles with statistics
-- [ ] Problem tags and categories
-- [ ] Search and filter problems
-- [ ] Contest mode
-
-### Phase 4: AI Integration
-- [ ] AI-powered code feedback
-- [ ] Optimization suggestions
-- [ ] Code quality analysis
-- [ ] Hint system
-
-### Phase 5: Production Ready
-- [ ] Docker sandbox for code execution
-- [ ] Rate limiting
-- [ ] Caching (Redis)
-- [ ] Monitoring and logging
-- [ ] CI/CD pipeline
-- [ ] Comprehensive testing
+### Collaboration Tables
+- **rooms** - Collaborative coding rooms
+- **room_participants** - Room membership
+- **room_sessions** - Active coding sessions
+- **room_messages** - Chat messages
+- **room_code_snapshots** - Code version history
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📝 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Author
 
-Built with ❤️ for competitive programming enthusiasts
+**arghaDEVIL**
+- GitHub: [@arghaDEVIL](https://github.com/arghaDEVIL)
+
+## 🙏 Acknowledgments
+
+- [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
+- [shadcn/ui](https://ui.shadcn.com/) - Beautiful component library
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/) - Code editor
+- [Google Gemini](https://ai.google.dev/) - AI feedback generation
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
+
+## 📧 Support
+
+For support, email your-email@example.com or open an issue on GitHub.
+
+## 🗺️ Roadmap
+
+- [ ] Add more programming languages (Java, JavaScript, Go)
+- [ ] Implement contest mode
+- [ ] Add leaderboards
+- [ ] Mobile app
+- [ ] Video tutorials
+- [ ] Code review system
+- [ ] Integration with GitHub
+- [ ] Advanced analytics
+
+## ⭐ Star History
+
+If you find this project useful, please consider giving it a star!
 
 ---
 
-**Note**: This is a portfolio project showcasing full-stack development skills with modern technologies.
+Made with ❤️ by arghaDEVIL
