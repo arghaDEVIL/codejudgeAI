@@ -30,60 +30,48 @@ def upgrade():
                 "CREATE TYPE participant_role AS ENUM ('host', 'interviewer', 'candidate', 'viewer')"
             )
         )
+        connection.commit()
 
-    # Create room_participants table
-    op.create_table(
-        "room_participants",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("room_id", sa.Integer(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "role",
-            sa.Enum(
-                "host", "interviewer", "candidate", "viewer", name="participant_role"
-            ),
-            nullable=False,
-            server_default="viewer",
-        ),
-        sa.Column("display_name", sa.String(length=100), nullable=False),
-        sa.Column("cursor_color", sa.String(length=7), nullable=False),
-        sa.Column("is_active", sa.Boolean(), nullable=False, server_default="true"),
-        sa.Column(
-            "joined_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.Column("left_at", sa.DateTime(timezone=True), nullable=True),
-        sa.ForeignKeyConstraint(["room_id"], ["rooms.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
-        sa.PrimaryKeyConstraint("id"),
+    # Create room_participants table using raw SQL
+    connection.execute(
+        sa.text("""
+        CREATE TABLE IF NOT EXISTS room_participants (
+            id SERIAL PRIMARY KEY,
+            room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            role participant_role NOT NULL DEFAULT 'viewer',
+            display_name VARCHAR(100) NOT NULL,
+            cursor_color VARCHAR(7) NOT NULL,
+            is_active BOOLEAN NOT NULL DEFAULT true,
+            joined_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+            left_at TIMESTAMP WITH TIME ZONE
+        )
+    """)
     )
+    connection.commit()
 
     # Create indexes
-    op.create_index(
-        op.f("ix_room_participants_id"), "room_participants", ["id"], unique=False
+    connection.execute(
+        sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_room_participants_id ON room_participants(id)"
+        )
     )
-    op.create_index(
-        op.f("ix_room_participants_room_id"),
-        "room_participants",
-        ["room_id"],
-        unique=False,
+    connection.execute(
+        sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_room_participants_room_id ON room_participants(room_id)"
+        )
     )
-    op.create_index(
-        op.f("ix_room_participants_user_id"),
-        "room_participants",
-        ["user_id"],
-        unique=False,
+    connection.execute(
+        sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_room_participants_user_id ON room_participants(user_id)"
+        )
     )
+    connection.commit()
 
 
 def downgrade():
     """Drop room_participants table"""
-    op.drop_index(op.f("ix_room_participants_user_id"), table_name="room_participants")
-    op.drop_index(op.f("ix_room_participants_room_id"), table_name="room_participants")
-    op.drop_index(op.f("ix_room_participants_id"), table_name="room_participants")
-    op.drop_table("room_participants")
-
-    # Drop enum type
-    op.execute("DROP TYPE participant_role;")
+    connection = op.get_bind()
+    connection.execute(sa.text("DROP TABLE IF EXISTS room_participants CASCADE"))
+    connection.execute(sa.text("DROP TYPE IF EXISTS participant_role"))
+    connection.commit()

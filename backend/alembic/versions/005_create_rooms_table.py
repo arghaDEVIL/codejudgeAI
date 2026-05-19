@@ -33,6 +33,7 @@ def upgrade():
                 "CREATE TYPE room_mode AS ENUM ('collaborative', 'interview', 'practice')"
             )
         )
+        connection.commit()
 
     # Check if room_status exists
     result = connection.execute(
@@ -42,62 +43,50 @@ def upgrade():
         connection.execute(
             sa.text("CREATE TYPE room_status AS ENUM ('active', 'ended', 'archived')")
         )
+        connection.commit()
 
-    # Create rooms table
-    op.create_table(
-        "rooms",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("room_code", sa.String(length=8), nullable=False),
-        sa.Column("title", sa.String(length=200), nullable=False),
-        sa.Column("description", sa.Text(), nullable=True),
-        sa.Column("host_user_id", sa.Integer(), nullable=False),
-        sa.Column("problem_id", sa.Integer(), nullable=True),
-        sa.Column(
-            "mode",
-            sa.Enum("collaborative", "interview", "practice", name="room_mode"),
-            nullable=False,
-            server_default="collaborative",
-        ),
-        sa.Column(
-            "status",
-            sa.Enum("active", "ended", "archived", name="room_status"),
-            nullable=False,
-            server_default="active",
-        ),
-        sa.Column(
-            "max_participants", sa.Integer(), nullable=False, server_default="10"
-        ),
-        sa.Column("settings", JSON, nullable=False, server_default="{}"),
-        sa.Column(
-            "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("ended_at", sa.DateTime(timezone=True), nullable=True),
-        sa.ForeignKeyConstraint(["host_user_id"], ["users.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["problem_id"], ["problems.id"], ondelete="SET NULL"),
-        sa.PrimaryKeyConstraint("id"),
+    # Create rooms table using raw SQL to avoid SQLAlchemy's automatic ENUM creation
+    connection.execute(
+        sa.text("""
+        CREATE TABLE IF NOT EXISTS rooms (
+            id SERIAL PRIMARY KEY,
+            room_code VARCHAR(8) NOT NULL UNIQUE,
+            title VARCHAR(200) NOT NULL,
+            description TEXT,
+            host_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            problem_id INTEGER REFERENCES problems(id) ON DELETE SET NULL,
+            mode room_mode NOT NULL DEFAULT 'collaborative',
+            status room_status NOT NULL DEFAULT 'active',
+            max_participants INTEGER NOT NULL DEFAULT 10,
+            settings JSON NOT NULL DEFAULT '{}',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+            updated_at TIMESTAMP WITH TIME ZONE,
+            ended_at TIMESTAMP WITH TIME ZONE
+        )
+    """)
     )
+    connection.commit()
 
     # Create indexes
-    op.create_index(op.f("ix_rooms_id"), "rooms", ["id"], unique=False)
-    op.create_index(op.f("ix_rooms_room_code"), "rooms", ["room_code"], unique=True)
-    op.create_index(
-        op.f("ix_rooms_host_user_id"), "rooms", ["host_user_id"], unique=False
+    connection.execute(sa.text("CREATE INDEX IF NOT EXISTS ix_rooms_id ON rooms(id)"))
+    connection.execute(
+        sa.text("CREATE INDEX IF NOT EXISTS ix_rooms_room_code ON rooms(room_code)")
     )
-    op.create_index(op.f("ix_rooms_problem_id"), "rooms", ["problem_id"], unique=False)
+    connection.execute(
+        sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_rooms_host_user_id ON rooms(host_user_id)"
+        )
+    )
+    connection.execute(
+        sa.text("CREATE INDEX IF NOT EXISTS ix_rooms_problem_id ON rooms(problem_id)")
+    )
+    connection.commit()
 
 
 def downgrade():
     """Drop rooms table"""
-    op.drop_index(op.f("ix_rooms_problem_id"), table_name="rooms")
-    op.drop_index(op.f("ix_rooms_host_user_id"), table_name="rooms")
-    op.drop_index(op.f("ix_rooms_room_code"), table_name="rooms")
-    op.drop_index(op.f("ix_rooms_id"), table_name="rooms")
-    op.drop_table("rooms")
-
-    # Drop enum types
-    op.execute("DROP TYPE room_mode;")
-    op.execute("DROP TYPE room_status;")
+    connection = op.get_bind()
+    connection.execute(sa.text("DROP TABLE IF EXISTS rooms CASCADE"))
+    connection.execute(sa.text("DROP TYPE IF EXISTS room_mode"))
+    connection.execute(sa.text("DROP TYPE IF EXISTS room_status"))
+    connection.commit()

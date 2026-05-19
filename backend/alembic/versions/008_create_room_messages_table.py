@@ -29,44 +29,39 @@ def upgrade():
         connection.execute(
             sa.text("CREATE TYPE message_type AS ENUM ('chat', 'system', 'code_run')")
         )
+        connection.commit()
 
-    # Create room_messages table
-    op.create_table(
-        "room_messages",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("room_id", sa.Integer(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=True),
-        sa.Column(
-            "message_type",
-            sa.Enum("chat", "system", "code_run", name="message_type"),
-            nullable=False,
-            server_default="chat",
-        ),
-        sa.Column("content", sa.Text(), nullable=False),
-        sa.Column("message_data", JSON, nullable=True, server_default="{}"),
-        sa.Column(
-            "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.ForeignKeyConstraint(["room_id"], ["rooms.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="SET NULL"),
-        sa.PrimaryKeyConstraint("id"),
+    # Create room_messages table using raw SQL
+    connection.execute(
+        sa.text("""
+        CREATE TABLE IF NOT EXISTS room_messages (
+            id SERIAL PRIMARY KEY,
+            room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+            user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            message_type message_type NOT NULL DEFAULT 'chat',
+            content TEXT NOT NULL,
+            message_data JSON DEFAULT '{}',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+        )
+    """)
     )
+    connection.commit()
 
     # Create indexes
-    op.create_index(op.f("ix_room_messages_id"), "room_messages", ["id"], unique=False)
-    op.create_index(
-        op.f("ix_room_messages_room_id"), "room_messages", ["room_id"], unique=False
+    connection.execute(
+        sa.text("CREATE INDEX IF NOT EXISTS ix_room_messages_id ON room_messages(id)")
     )
+    connection.execute(
+        sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_room_messages_room_id ON room_messages(room_id)"
+        )
+    )
+    connection.commit()
 
 
 def downgrade():
     """Drop room_messages table"""
-    op.drop_index(op.f("ix_room_messages_room_id"), table_name="room_messages")
-    op.drop_index(op.f("ix_room_messages_id"), table_name="room_messages")
-    op.drop_table("room_messages")
-
-    # Drop enum type
-    op.execute("DROP TYPE message_type;")
+    connection = op.get_bind()
+    connection.execute(sa.text("DROP TABLE IF EXISTS room_messages CASCADE"))
+    connection.execute(sa.text("DROP TYPE IF EXISTS message_type"))
+    connection.commit()

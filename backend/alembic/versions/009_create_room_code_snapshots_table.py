@@ -30,51 +30,41 @@ def upgrade():
                 "CREATE TYPE snapshot_type AS ENUM ('auto', 'manual', 'submission')"
             )
         )
+        connection.commit()
 
-    # Create room_code_snapshots table
-    op.create_table(
-        "room_code_snapshots",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("room_id", sa.Integer(), nullable=False),
-        sa.Column("code", sa.Text(), nullable=False),
-        sa.Column("language", sa.String(length=20), nullable=False),
-        sa.Column(
-            "snapshot_type",
-            sa.Enum("auto", "manual", "submission", name="snapshot_type"),
-            nullable=False,
-            server_default="auto",
-        ),
-        sa.Column("created_by", sa.Integer(), nullable=True),
-        sa.Column(
-            "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.ForeignKeyConstraint(["room_id"], ["rooms.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["created_by"], ["users.id"], ondelete="SET NULL"),
-        sa.PrimaryKeyConstraint("id"),
+    # Create room_code_snapshots table using raw SQL
+    connection.execute(
+        sa.text("""
+        CREATE TABLE IF NOT EXISTS room_code_snapshots (
+            id SERIAL PRIMARY KEY,
+            room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+            code TEXT NOT NULL,
+            language VARCHAR(20) NOT NULL,
+            snapshot_type snapshot_type NOT NULL DEFAULT 'auto',
+            created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+        )
+    """)
     )
+    connection.commit()
 
     # Create indexes
-    op.create_index(
-        op.f("ix_room_code_snapshots_id"), "room_code_snapshots", ["id"], unique=False
+    connection.execute(
+        sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_room_code_snapshots_id ON room_code_snapshots(id)"
+        )
     )
-    op.create_index(
-        op.f("ix_room_code_snapshots_room_id"),
-        "room_code_snapshots",
-        ["room_id"],
-        unique=False,
+    connection.execute(
+        sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_room_code_snapshots_room_id ON room_code_snapshots(room_id)"
+        )
     )
+    connection.commit()
 
 
 def downgrade():
     """Drop room_code_snapshots table"""
-    op.drop_index(
-        op.f("ix_room_code_snapshots_room_id"), table_name="room_code_snapshots"
-    )
-    op.drop_index(op.f("ix_room_code_snapshots_id"), table_name="room_code_snapshots")
-    op.drop_table("room_code_snapshots")
-
-    # Drop enum type
-    op.execute("DROP TYPE snapshot_type;")
+    connection = op.get_bind()
+    connection.execute(sa.text("DROP TABLE IF EXISTS room_code_snapshots CASCADE"))
+    connection.execute(sa.text("DROP TYPE IF EXISTS snapshot_type"))
+    connection.commit()
